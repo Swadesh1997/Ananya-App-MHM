@@ -1,0 +1,85 @@
+# ---------------------------------------------------------------- secrets
+# Never commit these. If one has already been committed, rotating the key is
+# the only real fix — removing the file from tracking does not remove it from
+# the repository's history.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Android signing
+key.properties
+*.jks
+*.keystore
+
+# Firebase config is safe to commit for a mobile app (the Android API key is
+# not a secret and is restricted by package name + SHA), but service-account
+# JSON is NOT.
+*serviceAccount*.json
+firebase-adminsdk*.json
+
+# ---------------------------------------------------------------- Flutter
+ananya/.dart_tool/
+ananya/.flutter-plugins
+ananya/.flutter-plugins-dependencies
+ananya/build/
+ananya/.packages
+ananya/pubspec.lock.bak
+**/generated_plugin_registrant.dart
+
+# Android
+ananya/android/.gradle/
+ananya/android/local.properties
+ananya/android/app/debug/
+ananya/android/app/profile/
+ananya/android/app/release/
+ananya/android/.kotlin/
+
+# iOS
+ananya/ios/Pods/
+ananya/ios/.symlinks/
+ananya/ios/Flutter/Flutter.framework
+ananya/ios/Flutter/Flutter.podspec
+ananya/ios/Flutter/flutter_export_environment.sh
+
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.sqlite3
+db.sqlite3
+staticfiles/
+
+# ---------------------------------------------------------------- editors, OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------- misc
+node_modules/
+*.log
+
+# A copy of the vendor's chatbot repository, downloaded for reference only.
+# The maintained copy lives in chatbot/ — this one would just be a duplicate
+# that drifts out of sync.
+New folder/
+
+# Firebase service-account key used by tools/export_questions.js. It bypasses
+# every Firestore security rule, so it is a master key to the database and
+# must never be committed.
+tools/service-account.json
+tools/node_modules/
+tools/*.csv
+
+# ---------------------------------------------------------------- public copy
+# Firebase project config is kept out of the public repository.
+google-services.json
+GoogleService-Info.plist
+# The Probahini chatbot is a partner's code and is not published here.
+chatbot/
+information.txt

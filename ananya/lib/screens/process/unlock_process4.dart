@@ -1,0 +1,95 @@
+import 'package:ananya/models/period_state_questionnaire.dart';
+import 'package:ananya/utils/constants.dart';
+import 'package:ananya/utils/custom_theme.dart';
+import 'package:ananya/widgets/choice_item.dart';
+import 'package:ananya/widgets/custom_app_bar_with_progress.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ananya/l10n/app_localizations.dart';
+
+class UnlockProcess4 extends StatelessWidget {
+  const UnlockProcess4({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBarWithProgress(
+        progressValue: 0.8,
+        stepText: '4/5',
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: Theme.of(context).largemainPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: AppLocalizations.of(context)!.do_you_take,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        height: 1.3,
+                        color: ACCENT,
+                      ),
+                    ),
+                    TextSpan(
+                      text: AppLocalizations.of(context)!.birth_control,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        height: 1.3,
+                        color: PRIMARY_COLOR,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: AppLocalizations.of(context)!.measures,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        height: 1.3,
+                        color: ACCENT,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                AppLocalizations.of(context)!
+                    .we_are_asking_because_some_type_of_birth_control_measures_can_potentially_impact_your_menstrual_cycle,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              ChoiceItem(
+                text: AppLocalizations.of(context)!.yes,
+                onSelected: (choice) {
+                  context.read<PeriodState>().updateBirthControl(true);
+                  Navigator.pushNamed(
+                    context,
+                    '/unlock-process/5',
+                    arguments: false,
+                  );
+                },
+              ),
+              ChoiceItem(
+                text: AppLocalizations.of(context)!.no,
+                onSelected: (choice) {
+                  context.read<PeriodState>().updateBirthControl(false);
+                  Navigator.pushNamed(
+                    context,
+                    '/unlock-process/5',
+                    arguments: false,
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

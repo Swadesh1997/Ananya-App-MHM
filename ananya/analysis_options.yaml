@@ -1,0 +1,44 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at https://dart.dev/lints.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+  rules:
+    # Two naming rules are waived deliberately. Everything else in
+    # flutter_lints is on, and `flutter analyze` is clean — the point of
+    # turning these off is that a real finding is now visible instead of
+    # being the 231st line of a wall nobody reads.
+    #
+    # constant_identifier_names — the design tokens in utils/constants.dart are
+    # SCREAMING_CASE (PRIMARY_COLOR, ACCENT, BACKGROUND, ...) and are used in
+    # about 280 places. The convention is applied consistently; renaming would
+    # touch nearly every file in lib/ and change no behaviour.
+    constant_identifier_names: false
+    #
+    # file_names — a handful of older files are kebab-case
+    # (splash-screen.dart, local-notification.dart, ...). Renaming a file means
+    # rewriting every import of it, again for no behavioural gain.
+    file_names: false
+    #
+    # If either convention is ever changed, do it as its own commit and delete
+    # the matching line here rather than leaving the rule off.
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options

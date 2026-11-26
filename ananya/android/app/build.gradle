@@ -1,0 +1,104 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
+
+
+// 🔑 Load keystore properties
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
+android {
+    namespace = "com.mhmapp.ananyaproject"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    defaultConfig {
+        applicationId = "com.mhmapp.ananyaproject"
+        minSdkVersion = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    // 🔑 Signing configuration
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        release {
+
+            // ✅ Use your upload keystore
+            signingConfig signingConfigs.release
+
+            // NOTE ON APP SIZE — do not add `ndk { abiFilters ... }` here.
+            // It was tried and had no effect: Flutter's Gradle plugin packages
+            // libflutter.so / libapp.so itself, from the -Ptarget-platform the
+            // flutter tool passes, so it bypasses the NDK filter entirely.
+            //
+            // A universal APK carries a full engine + app per architecture
+            // (110 MB across three ABIs). Control it from the build command:
+            //
+            //   flutter build appbundle --release          <- for Play Store
+            //   flutter build apk --release --split-per-abi <- for direct APKs
+            //
+            // Never ship the plain `flutter build apk --release` output.
+
+            minifyEnabled true
+            shrinkResources true
+
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'
+            ), 'proguard-rules.pro'
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+
+    implementation platform("com.google.firebase:firebase-bom:34.8.0")
+    implementation "com.google.firebase:firebase-analytics"
+
+}

@@ -1,0 +1,61 @@
+rules_version = '2';
+
+// Ananya — Firestore access rules.
+//
+// The app stores menstrual health records at:
+//     users/{uid}                     profile
+//     users/{uid}/period/latest       current cycle settings
+//     users/{uid}/periods/{yyyy-MM-dd}  one document per logged period
+//
+// Those paths are scoped per user, but a path scopes nothing on its own —
+// only these rules do. Anyone can talk to Firestore directly with the project
+// id and a signed-in account, bypassing the app entirely, so without a rule
+// like the one below every user can read every other user's health history.
+//
+// Default-deny: anything not matched by a rule here is refused.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A signed-in person may read and write their own record and everything
+    // beneath it, and nobody else's.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    // Questions asked of Probahini, recorded for the programme to see what
+    // girls actually ask and where. The records carry age, district and the
+    // question — no user id, so they cannot be traced back to anyone.
+    //
+    // Write-only from the app, and deliberately so. If clients could read this
+    // collection, any signed-in girl could read every other girl's questions,
+    // and "anonymous" would be worth very little: a menstrual-health question
+    // from a 13-year-old in a named district is not hard to place in a small
+    // community. Analysts read it with a service account, which bypasses these
+    // rules server-side.
+    //
+    // Nothing may be edited or removed either — an append-only log is the
+    // whole point, and a client that could delete could quietly erase its own
+    // history.
+    // Each record holds the question and Probahini's answer, so the programme
+    // can see not only what girls ask but where the chatbot failed to help.
+    match /probahini_questions/{id} {
+      allow create: if request.auth != null
+                    && request.resource.data.question is string
+                    && request.resource.data.question.size() > 0
+                    && request.resource.data.question.size() <= 2000
+                    && (request.resource.data.answer == null
+                        || (request.resource.data.answer is string
+                            && request.resource.data.answer.size() <= 10000));
+      allow read, update, delete: if false;
+    }
+
+    // Everything else is closed. Add rules deliberately rather than opening
+    // this up — a trailing `match /{document=**} { allow read, write: if true }`
+    // is what test mode leaves behind and it exposes the whole database.
+  }
+}
